@@ -23,8 +23,23 @@ const read = (req,res,next) => {
     }
 }
 
-// TODO: Implement the /dishes handlers needed to make the tests pass
+const validateParams = (req,res,next) => {
+
+}
+
+const create = (req,res,next) => {
+    if(!req.body.data.name || !req.body.data.description) {
+        next({
+            status:400,
+            message: 'missing params'
+        })
+    } else {
+        req.body.data.id = dishes.length + 1
+        dishes.push(req.body.data)
+        res.status(201).json({data: req.body.data})
+    }
+}
 
 module.exports = {
-    list, read
+    list, read, create
 }
