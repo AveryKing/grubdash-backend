@@ -10,9 +10,21 @@ const list = (req,res) => {
     res.json({data:dishes})
 }
 
+const read = (req,res,next) => {
+    const foundDish = dishes.find(dish => dish.id === req.params.dishId);
+    if(!foundDish) {
+        return next({
+            status:404,
+            message:"dish not found"
+        })
+
+    } else {
+        return res.json({data:foundDish});
+    }
+}
 
 // TODO: Implement the /dishes handlers needed to make the tests pass
 
 module.exports = {
-    list
+    list, read
 }
