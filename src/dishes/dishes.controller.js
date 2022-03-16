@@ -62,17 +62,21 @@ const update = (req,res,next) => {
     res.json({data: res.locals.foundDish})
 }
 
+const deleteDish = (req,res) => {
+    res.status(405).json({error:'not implemented'})
+}
+
 module.exports = {
-    list, read: [
-        findDish,
-        read
-    ],
     create: [
         validateParam("name"),
         validateParam("description"),
         validateParam("image_url"),
         validateParam("price"),
         create
+    ],
+    read: [
+        findDish,
+        read
     ],
     update: [
         findDish,
@@ -81,5 +85,7 @@ module.exports = {
         validateParam("image_url"),
         validateParam("price"),
         update
-    ]
+    ],
+    deleteDish,
+    list,
 }
