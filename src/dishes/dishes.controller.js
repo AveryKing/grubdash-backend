@@ -49,6 +49,15 @@ const create = (req, res, next) => {
 }
 
 const update = (req,res,next) => {
+    if(req.body.data.id && req.body.data.id !== req.params.dishId) {
+        return res.status(400).json({error: `id ${req.body.data.id} does not equal ${req.params.dishId}`})
+    }
+
+    if(!req.body.data.id) {
+        res.locals.foundDish = req.body.data;
+        res.locals.foundDish.id = req.params.dishId;
+        res.json({data: res.locals.foundDish})
+    }
     res.locals.foundDish = req.body.data;
     res.json({data: res.locals.foundDish})
 }
@@ -66,11 +75,11 @@ module.exports = {
         create
     ],
     update: [
+        findDish,
         validateParam("name"),
         validateParam("description"),
         validateParam("image_url"),
         validateParam("price"),
-        findDish,
         update
     ]
 }
