@@ -5,4 +5,7 @@ const controller = require('./orders.controller');
 router.route('/')
     .get(controller.list);
 
+router.route('/:orderId')
+    .get(controller.read);
+
 module.exports = router;

@@ -9,8 +9,17 @@ const nextId = require("../utils/nextId");
 const list = (req,res) => {
     res.json({data:orders});
 }
+
+const read = (req,res) => {
+    const order = orders.find(x => x.id === req.params.orderId);
+    if(!order) {
+        return res.status(404).json({error: `order ${req.params.orderId} not found`})
+    }
+    return res.json({data: order})
+}
 // TODO: Implement the /orders handlers needed to make the tests pass
 
 module.exports = {
-    list
+    list,
+    read
 }
