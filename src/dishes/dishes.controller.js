@@ -48,6 +48,11 @@ const create = (req, res, next) => {
 
 }
 
+const update = (req,res,next) => {
+    res.locals.foundDish = req.body.data;
+    res.json({data: res.locals.foundDish})
+}
+
 module.exports = {
     list, read: [
         findDish,
@@ -59,5 +64,9 @@ module.exports = {
         validateParam("image_url"),
         validateParam("price"),
         create
+    ],
+    update: [
+        findDish,
+        update
     ]
 }
