@@ -66,6 +66,10 @@ module.exports = {
         create
     ],
     update: [
+        validateParam("name"),
+        validateParam("description"),
+        validateParam("image_url"),
+        validateParam("price"),
         findDish,
         update
     ]
