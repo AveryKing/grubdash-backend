@@ -27,6 +27,9 @@ const read = (req,res,next) => {
 function validateParam(propertyName) {
     return function (req, res, next) {
         const {data = {}} = req.body;
+        if(data.price < 0) {
+            return next({status: 400, message: `price must be greater than 0`});
+        }
         if (data[propertyName]) {
             return next();
         }
