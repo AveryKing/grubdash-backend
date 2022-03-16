@@ -23,23 +23,32 @@ const read = (req,res,next) => {
     }
 }
 
-const validateParams = (req,res,next) => {
+
+function validateParam(propertyName) {
+    return function (req, res, next) {
+        const {data = {}} = req.body;
+        if (data[propertyName]) {
+            return next();
+        }
+        next({status: 400, message: `Must include a ${propertyName}`});
+    };
 
 }
 
 const create = (req,res,next) => {
-    if(!req.body.data.name || !req.body.data.description) {
-        next({
-            status:400,
-            message: 'missing params'
-        })
-    } else {
         req.body.data.id = dishes.length + 1
         dishes.push(req.body.data)
         res.status(201).json({data: req.body.data})
-    }
+
 }
 
 module.exports = {
-    list, read, create
+    list, read,
+    create: [
+        validateParam("name"),
+        validateParam("description"),
+        validateParam("image_url"),
+        validateParam("price"),
+        create
+    ]
 }
