@@ -18,8 +18,48 @@ const read = (req,res) => {
     return res.json({data: order})
 }
 // TODO: Implement the /orders handlers needed to make the tests pass
+function validateParam(propertyName) {
+    return function (req, res, next) {
+        const {data = {}} = req.body;
+
+        if (data[propertyName]) {
+            return next();
+        }
+        next({status: 400, message: `Must include a ${propertyName}`});
+    };
+
+}
+
+const create = (req,res) => {
+    if(req.body.data.dishes.length === 0) {
+        res.status(400).json({error: 'dishes array cannot be empty'})
+    }
+    if(typeof(req.body.data.dishes) !== 'object') {
+        res.status(400).json({error: 'dishes must be an array'})
+    }
+    if(req.body.data.dishes.some(x => !x.quantity)) {
+        res.status(400).json({error: 'dish must have a quantity of at least 1 (cannot be 0!)'});
+    }
+    req.body.data.dishes.forEach(dish => {
+        if(!Number.isInteger(dish.quantity)) {
+            res.status(400).json({error: `quantity must be an integer (1, 2, 3, 4, 5, etc... )`})
+        }
+    })
+
+    req.body.data.id = nextId();
+    orders.push(req.body.data);
+    res.status(201).json({data: req.body.data});
+
+}
 
 module.exports = {
     list,
-    read
+    read,
+    create: [
+        validateParam('deliverTo'),
+        validateParam('mobileNumber'),
+        validateParam('dishes'),
+
+        create
+    ]
 }
