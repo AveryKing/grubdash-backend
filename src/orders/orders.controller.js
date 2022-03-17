@@ -76,7 +76,6 @@ const deleteOrder = (req,res) => {
         orders.splice(orders.indexOf(res.locals.order));
         res.status(204).json({data:res.locals.order});
     }
-
 }
 
 module.exports = {
