@@ -33,12 +33,12 @@ const read = (req, res) => res.json({data: res.locals.foundDish});
 const deleteDish = (req,res) => res.status(405).json({error:'not implemented'});
 
 const create = (req, res) => {
-    req.body.data.id = dishes.length + 1;
+    req.body.data.id = nextId();
     dishes.push(req.body.data);
     res.status(201).json({data: req.body.data})
 }
 
-const update = (req,res,next) => {
+const update = (req,res) => {
     if(req.body.data.id && req.body.data.id !== req.params.dishId) {
         return res.status(400).json({error: `id ${req.body.data.id} does not equal ${req.params.dishId}`})
     }
