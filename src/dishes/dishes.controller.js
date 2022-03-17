@@ -1,14 +1,6 @@
 const path = require("path");
-
-// Use the existing dishes data
 const dishes = require(path.resolve("src/data/dishes-data"));
-
-// Use this function to assign ID's when necessary
 const nextId = require("../utils/nextId");
-
-const list = (req, res) => {
-    res.json({data: dishes})
-}
 
 const findDish = (req, res, next) => {
     const foundDish = dishes.find(dish => dish.id === req.params.dishId);
@@ -20,11 +12,6 @@ const findDish = (req, res, next) => {
     }
     res.locals.foundDish = foundDish
     next();
-}
-
-const read = (req, res, next) => {
-    return res.json({data: res.locals.foundDish});
-
 }
 
 function validateParam(propertyName) {
@@ -41,18 +28,20 @@ function validateParam(propertyName) {
 
 }
 
-const create = (req, res, next) => {
-    req.body.data.id = dishes.length + 1
-    dishes.push(req.body.data)
-    res.status(201).json({data: req.body.data})
+const list = (req, res) => res.json({data: dishes});
+const read = (req, res) => res.json({data: res.locals.foundDish});
+const deleteDish = (req,res) => res.status(405).json({error:'not implemented'});
 
+const create = (req, res) => {
+    req.body.data.id = dishes.length + 1;
+    dishes.push(req.body.data);
+    res.status(201).json({data: req.body.data})
 }
 
 const update = (req,res,next) => {
     if(req.body.data.id && req.body.data.id !== req.params.dishId) {
         return res.status(400).json({error: `id ${req.body.data.id} does not equal ${req.params.dishId}`})
     }
-
     if(!req.body.data.id) {
         res.locals.foundDish = req.body.data;
         res.locals.foundDish.id = req.params.dishId;
@@ -60,10 +49,6 @@ const update = (req,res,next) => {
     }
     res.locals.foundDish = req.body.data;
     res.json({data: res.locals.foundDish})
-}
-
-const deleteDish = (req,res) => {
-    res.status(405).json({error:'not implemented'})
 }
 
 module.exports = {

@@ -31,20 +31,17 @@ const validateDishesArray = (req,res,next) => {
     next();
 }
 const doesOrderExist = (req,res, next) => {
-
-}
-
-const list = (req, res) => {
-    res.json({data: orders});
-}
-
-const read = (req, res) => {
     const order = orders.find(x => x.id === req.params.orderId);
     if (!order) {
         return res.status(404).json({error: `order ${req.params.orderId} not found`})
     }
-    return res.json({data: order})
+    res.locals.order = order;
+    next();
 }
+
+const list = (req, res) => res.json({data: orders});
+
+const read = (req, res) => res.json({data: res.locals.order});
 
 const create = (req, res) => {
     req.body.data.id = nextId();
@@ -54,7 +51,10 @@ const create = (req, res) => {
 
 module.exports = {
     list,
-    read,
+    read: [
+        doesOrderExist,
+        read
+    ],
     create: [
         validateParam('deliverTo'),
         validateParam('mobileNumber'),
