@@ -6,6 +6,9 @@ const nextId = require("../utils/nextId");
 function validateParam(propertyName) {
     return function (req, res, next) {
         const {data = {}} = req.body;
+        if(propertyName === 'status' && data['status'] === 'invalid') {
+            next({status: 400, message: `status is invalid`});
+        }
         if (data[propertyName]) {
             return next();
         }
@@ -30,6 +33,7 @@ const validateDishesArray = (req,res,next) => {
     })
     next();
 }
+
 const doesOrderExist = (req,res, next) => {
     const order = orders.find(x => x.id === req.params.orderId);
     if (!order) {
@@ -49,6 +53,19 @@ const create = (req, res) => {
     res.status(201).json({data: req.body.data});
 }
 
+const update = (req, res) => {
+    if (req.body.data.id && req.body.data.id !== req.params.orderId) {
+        return res.status(400).json({error: `id ${req.body.data.id} does not equal ${req.params.orderId}`})
+    }
+    if (!req.body.data.id) {
+        res.locals.order = req.body.data;
+        res.locals.order.id = req.params.orderId;
+        res.json({data: res.locals.order})
+    }
+    res.locals.order = req.body.data;
+    res.json({data: res.locals.order});
+}
+
 module.exports = {
     list,
     read: [
@@ -61,5 +78,14 @@ module.exports = {
         validateParam('dishes'),
         validateDishesArray,
         create
+    ],
+    update: [
+        doesOrderExist,
+        validateParam('deliverTo'),
+        validateParam('mobileNumber'),
+        validateParam('dishes'),
+        validateParam('status'),
+        validateDishesArray,
+        update
     ]
 }
