@@ -8,6 +8,7 @@ router.route('/')
 
 router.route('/:orderId')
     .get(controller.read)
-    .put(controller.update);
+    .put(controller.update)
+    .delete(controller.deleteOrder);
 
 module.exports = router;

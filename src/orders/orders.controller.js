@@ -37,7 +37,10 @@ const validateDishesArray = (req,res,next) => {
 const doesOrderExist = (req,res, next) => {
     const order = orders.find(x => x.id === req.params.orderId);
     if (!order) {
-        return res.status(404).json({error: `order ${req.params.orderId} not found`})
+        next({
+            status:404,
+            message: `order ${req.params.orderId} not found`
+        })
     }
     res.locals.order = order;
     next();
@@ -66,8 +69,22 @@ const update = (req, res) => {
     res.json({data: res.locals.order});
 }
 
+const deleteOrder = (req,res) => {
+    if(res.locals.order.status !== 'pending') {
+        res.status(400).json({error:'order can only be deleted if status is pending'})
+    } else {
+        orders.splice(orders.indexOf(res.locals.order));
+        res.status(204).json({data:res.locals.order});
+    }
+
+}
+
 module.exports = {
     list,
+    deleteOrder: [
+        doesOrderExist,
+        deleteOrder
+    ],
     read: [
         doesOrderExist,
         read
