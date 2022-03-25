@@ -17,21 +17,33 @@ const findDish = (req, res, next) => {
     next();
 }
 
+
+// Validates that 'name' parameter is included in request body
+const bodyHasName = (req,res,next) => validateParam(req,res,next,'name');
+
+// Validates that 'description' parameter is included in request body
+const bodyHasDescription = (req,res,next) => validateParam(req,res,next,'description');
+
+// Validates that 'image_url' parameter is included in request body
+const bodyHasImageUrl = (req,res,next) => validateParam(req,res,next,'image_url');
+
+// Validates that 'price' parameter is included in request body
+const priceIsPositiveInteger = (req,res,next) => {
+    const {price} = req.body.data;
+    if (price < 0 || !Number.isInteger(price)) {
+        // validate price > 0
+        return next({status: 400, message: `price must be greater than 0`});
+    }
+    validateParam(req,res,next,'price');
+}
 // validate request parameters
-function validateParam(propertyName) {
-    return function (req, res, next) {
+function validateParam(req,res,next,propertyName) {
         const {data = {}} = req.body;
-        if (data.price < 0 || typeof (data.price) !== 'number') {
-            // validate price > 0
-            return next({status: 400, message: `price must be greater than 0`});
-        }
         if (data[propertyName]) {
             // continue to next if property present
             return next();
         }
         next({status: 400, message: `Must include a ${propertyName}`});
-    };
-
 }
 
 // list all dishes
@@ -70,10 +82,10 @@ const update = (req, res) => {
 
 module.exports = {
     create: [
-        validateParam("name"),
-        validateParam("description"),
-        validateParam("image_url"),
-        validateParam("price"),
+        bodyHasName,
+        bodyHasDescription,
+        bodyHasImageUrl,
+        priceIsPositiveInteger,
         create
     ],
     read: [
@@ -82,10 +94,10 @@ module.exports = {
     ],
     update: [
         findDish,
-        validateParam("name"),
-        validateParam("description"),
-        validateParam("image_url"),
-        validateParam("price"),
+        bodyHasName,
+        bodyHasDescription,
+        bodyHasImageUrl,
+        priceIsPositiveInteger,
         update
     ],
     deleteDish,
